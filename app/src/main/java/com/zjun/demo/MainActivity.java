@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.btn_track:
-                startActivity(new Intent(this, AnimTrackActivity.class));
+                startActivity(new Intent(this, Win10_AnimTrackActivity.class));
                 break;
         }
     }

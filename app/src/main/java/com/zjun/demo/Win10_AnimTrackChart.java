@@ -17,7 +17,7 @@ import android.view.View;
  * Create Date  : 2016/10/7
  * Version      : v1
  */
-public class AnimTrackChart extends View {
+public class Win10_AnimTrackChart extends View {
     private Paint mPaint;
     private Path path;
     private PathEffect pathEffect;
@@ -27,11 +27,11 @@ public class AnimTrackChart extends View {
     private int scale = 300;
     private int[] colors = {Color.RED, Color.MAGENTA, Color.YELLOW, Color.GREEN, Color.BLUE};
 
-    public AnimTrackChart(Context context) {
+    public Win10_AnimTrackChart(Context context) {
         this(context, null);
     }
 
-    public AnimTrackChart(Context context, AttributeSet attrs) {
+    public Win10_AnimTrackChart(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         mPaint = new Paint();

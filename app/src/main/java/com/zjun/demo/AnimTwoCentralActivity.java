@@ -54,7 +54,7 @@ public class AnimTwoCentralActivity extends AppCompatActivity {
                     /**
                      * 估算结果
                      *
-                     * @param fraction 由插值器提供的值，一般∈[0, 1]
+                     * @param fraction 由插值器提供的值，∈[0, 1]
                      * @param startValue 开始值
                      * @param endValue 结束值
                      * @return
@@ -87,13 +87,13 @@ public class AnimTwoCentralActivity extends AppCompatActivity {
     }
 
     /**
-     * 自定义差值器的动画
+     * 自定义插值器的动画
      */
     private void interpolatorAnim() {
         ObjectAnimator oa = ObjectAnimator.ofFloat(v_interpolator, "translationX", 0, 300);
         oa.setInterpolator(new TimeInterpolator() {
             /**
-             * 获取差值器的值
+             * 获取插值器的值
              * @param input 原生帧值[0, 1]
              * @return 校正后的值
              */
@@ -115,7 +115,7 @@ public class AnimTwoCentralActivity extends AppCompatActivity {
     }
 
     /**
-     * 默认动画
+     * 普通动画
      * 差值器默认为AccelerateDecelerateInterpolator
      */
     private void normalAnim() {

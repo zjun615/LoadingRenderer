@@ -1,6 +1,6 @@
 Readme
 ===
-LoadingRenderer —— 加载动画开源项目
+LoadingRenderer —— 此开源项目为加载动画
 
 ---
 ##目录

@@ -24,4 +24,11 @@
         android:text="Two Central Class of Anim"
         android:textAllCaps="false"
         android:onClick="onClick"/>
+    <Button
+        android:id="@+id/btn_track"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Anim track of Win10"
+        android:textAllCaps="false"
+        android:onClick="onClick"/>
 </LinearLayout>

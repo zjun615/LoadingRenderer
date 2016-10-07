@@ -24,6 +24,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.btn_anim:
                 startActivity(new Intent(this, AnimTwoCentralActivity.class));
                 break;
+
+            case R.id.btn_track:
+                startActivity(new Intent(this, AnimTrackActivity.class));
+                break;
         }
     }
 }

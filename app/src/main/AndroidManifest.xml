@@ -16,7 +16,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Win10LoadingRendererActivity" />
-        <activity android:name=".AnimTwoCentralActivity"></activity>
+        <activity android:name=".AnimTwoCentralActivity" />
+        <activity android:name=".AnimTrackActivity"></activity>
     </application>
 
 </manifest>

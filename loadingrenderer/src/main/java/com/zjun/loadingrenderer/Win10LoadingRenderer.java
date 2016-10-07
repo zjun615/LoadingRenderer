@@ -3,6 +3,7 @@ package com.zjun.loadingrenderer;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -12,13 +13,8 @@ import android.support.annotation.FloatRange;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Interpolator;
 import android.widget.RelativeLayout;
 
-import java.lang.IllegalArgumentException;
-import java.lang.Object;
-import java.lang.Override;
-import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,21 +135,28 @@ public class Win10LoadingRenderer extends RelativeLayout {
 
         List<Animator> animList = new ArrayList<>(5);
         for (int i = 0; i < mDotViews.length; i++) {
-            animList.add(startViewAnim(mDotViews[i], i));
+            animList.add(createViewAnim(mDotViews[i], i));
         }
         mAnimSet.playTogether(animList);
     }
 
-    private Animator startViewAnim(final View view, final int index) {
+    /**
+     * 创建动画
+     *
+     * @param view 需执行的控件
+     * @param index 该控件执行的顺序
+     * @return 该控件的动画
+     */
+    private Animator createViewAnim(final View view, final int index) {
         long duration = 7000; // 一个周期（2圈）一共运行7000ms，固定值
         int comeStepAngle = 22; // 到达的间隔角度
         int goStepAngle = 16; // 离开的间隔角度
 
         // 最小执行单位时间
-        final float minRunUnit = duration / 16;
+        final float minRunUnit = duration / 16f;
         // 最小执行单位时间所占总时间的比例
         double minRunPer = minRunUnit / duration;
-        // 在差值器中实际值（Y坐标值），共8组
+        // 在插值器中实际值（Y坐标值），共8组
         final double[] trueRunInOne = new double[]{
                 0,
                 0,
@@ -164,7 +167,7 @@ public class Win10LoadingRenderer extends RelativeLayout {
                 540 / 720d - index * goStepAngle / 720d,
                 1
         };
-        // 动画开始偏移量
+        // 动画开始的时间比偏移量。剩下的时间均摊到每个圆点上（本应该是length-1，但length效果更好）
         final float offset = (float) (index * (16 - 14) * minRunPer / mDotViews.length);
         // 在差值器中理论值（X坐标值），与realRunInOne对应
         final double[] rawRunInOne = new double[]{
@@ -179,6 +182,12 @@ public class Win10LoadingRenderer extends RelativeLayout {
         };
         logI("minRunUnit=%f, minRunPer=%f, offset=%f", minRunUnit, minRunPer, offset);
 
+        // 各贝塞尔曲线控制点的Y坐标
+        final float p1_2 = calculateLineY(rawRunInOne[2], trueRunInOne[2], rawRunInOne[3], trueRunInOne[3], rawRunInOne[1]);
+        final float p1_4 = calculateLineY(rawRunInOne[2], trueRunInOne[2], rawRunInOne[3], trueRunInOne[3], rawRunInOne[4]);
+        final float p1_5 = calculateLineY(rawRunInOne[5], trueRunInOne[5], rawRunInOne[6], trueRunInOne[6], rawRunInOne[4]);
+        final float p1_7 = calculateLineY(rawRunInOne[5], trueRunInOne[5], rawRunInOne[6], trueRunInOne[6], rawRunInOne[7]);
+
         // A 创建属性动画：绕着中心点旋转2圈
         ObjectAnimator objAnim = ObjectAnimator.ofFloat(view, "rotation", 0, 720);
         // B 设置一个周期执行的时间
@@ -186,7 +195,7 @@ public class Win10LoadingRenderer extends RelativeLayout {
         // C 设置重复执行的次数：无限次重复执行下去
         objAnim.setRepeatCount(ValueAnimator.INFINITE);
         // D 设置差值器
-        objAnim.setInterpolator(new Interpolator() {
+        objAnim.setInterpolator(new TimeInterpolator() {
             @Override
             public float getInterpolation(float input) {
                 if (input < rawRunInOne[1]) {
@@ -197,9 +206,9 @@ public class Win10LoadingRenderer extends RelativeLayout {
                         view.setVisibility(VISIBLE);
                     }
                     // 2 底部 → 左上角：贝赛尔曲线1
+                    // 先转换成[0, 1]范围
                     input = calculateNewPercent(rawRunInOne[1], rawRunInOne[2], 0, 1, input);
-                    float p1 = calculateLineY(rawRunInOne[2], trueRunInOne[2], rawRunInOne[3], trueRunInOne[3], rawRunInOne[1]);
-                    return calculateBezierQuadratic(trueRunInOne[1], p1, trueRunInOne[2], input);
+                    return calculateBezierQuadratic(trueRunInOne[1], p1_2, trueRunInOne[2], input);
 
                 } else if (input < rawRunInOne[3]) {
                     // 3 左上角 → 顶部：直线
@@ -208,14 +217,12 @@ public class Win10LoadingRenderer extends RelativeLayout {
                 } else if (input < rawRunInOne[4]) {
                     // 4 顶部 → 底部：贝赛尔曲线2
                     input = calculateNewPercent(rawRunInOne[3], rawRunInOne[4], 0, 1, input);
-                    float p1 = calculateLineY(rawRunInOne[2], trueRunInOne[2], rawRunInOne[3], trueRunInOne[3], rawRunInOne[4]);
-                    return calculateBezierQuadratic(trueRunInOne[3], p1, trueRunInOne[4], input);
+                    return calculateBezierQuadratic(trueRunInOne[3], p1_4, trueRunInOne[4], input);
 
                 } else if (input < rawRunInOne[5]) {
                     // 5 底部 → 左上角：贝赛尔曲线3
                     input = calculateNewPercent(rawRunInOne[4], rawRunInOne[5], 0, 1, input);
-                    float p1 = calculateLineY(rawRunInOne[5], trueRunInOne[5], rawRunInOne[6], trueRunInOne[6], rawRunInOne[4]);
-                    return calculateBezierQuadratic(trueRunInOne[4], p1, trueRunInOne[5], input);
+                    return calculateBezierQuadratic(trueRunInOne[4], p1_5, trueRunInOne[5], input);
 
                 } else if (input < rawRunInOne[6]) {
                     // 6 左上角 → 顶部：直线
@@ -224,8 +231,7 @@ public class Win10LoadingRenderer extends RelativeLayout {
                 } else if (input < rawRunInOne[7]) {
                     // 7 顶部 → 底部：贝赛尔曲线4
                     input = calculateNewPercent(rawRunInOne[6], rawRunInOne[7], 0, 1, input);
-                    float p1 = calculateLineY(rawRunInOne[5], trueRunInOne[5], rawRunInOne[6], trueRunInOne[6], rawRunInOne[7]);
-                    return calculateBezierQuadratic(trueRunInOne[6], p1, trueRunInOne[7], input);
+                    return calculateBezierQuadratic(trueRunInOne[6], p1_7, trueRunInOne[7], input);
 
                 } else {
                     // 8 消失

@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">LoadingRenderer</string>
+    <string name="win10">Win10LoadingRenderer</string>
+</resources>

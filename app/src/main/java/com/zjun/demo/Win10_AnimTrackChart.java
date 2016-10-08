@@ -14,8 +14,14 @@ import android.view.View;
  * File Name    : AnimTrackChart
  * Description  : 动画轨迹图，展示Win10动画的时间比图
  * Author       : Ralap
+ * Update Date  : 2016/10/8
  * Create Date  : 2016/10/7
- * Version      : v1
+ * Version      : v1.1
+ * ---------------------------------------------
+ * v1.1     2016/10/8
+ *          根据Win10LoadingRenderer的新的参数进行修改
+ * v1       2016/10/7
+ *          新建
  */
 public class Win10_AnimTrackChart extends View {
     private Paint mPaint;
@@ -56,11 +62,9 @@ public class Win10_AnimTrackChart extends View {
     private void drawTrack(Canvas canvas) {
 
         long duration = 1; // 一个周期（2圈）一共运行7000ms，固定值
-        int comeStepAngle = 22; // 到达的间隔角度
-        int goStepAngle = 16; // 离开的间隔角度
 
         // 最小执行单位时间
-        final float minRunUnit = duration / 16f;
+        final float minRunUnit = duration / 100f;
         // 最小执行单位时间所占总时间的比例
         float minRunPer = minRunUnit / duration;
 
@@ -69,25 +73,25 @@ public class Win10_AnimTrackChart extends View {
             final float[] ys = new float[]{
                     0,
                     0,
-                    160 / 720f - index * comeStepAngle / 720f,
-                    180 / 720f - index * goStepAngle / 720f,
+                    160 / 720f,
+                    190 / 720f,
                     360 / 720f,
-                    520 / 720f - index * comeStepAngle / 720f,
-                    540 / 720f - index * goStepAngle / 720f,
+                    520 / 720f,
+                    550 / 720f,
                     1
             };
             // 动画开始的时间比偏移量。剩下的时间均摊到每个圆点上
-            final float offset = (float) (index * (16 - 14) * minRunPer / 5);
+            final float offset =  index * (100 - 86) * minRunPer / (5 - 1);
             // 在差值器中理论值（X坐标值），与ys对应
             final float[] xs = new float[]{
                     0,
                     offset + 0,
-                    offset + 1 * minRunPer,
-                    offset + 5 * minRunPer,
-                    offset + 7 * minRunPer,
-                    offset + 8 * minRunPer,
-                    offset + 12 * minRunPer,
-                    offset + 14 * minRunPer
+                    offset + 11 * minRunPer,
+                    offset + 32 * minRunPer,
+                    offset + 43 * minRunPer,
+                    offset + 54 * minRunPer,
+                    offset + 75 * minRunPer,
+                    offset + 86 * minRunPer
             };
             
             

@@ -108,6 +108,7 @@ public class Win10LoadingRenderer extends RelativeLayout {
         float dotR = halfSize / 8; // 点半径
         int dotD = (int) (2 * dotR); // 点直径
 
+        // 计算圆点对旋转中心所占的角度
         float trackR = halfSize - dotR;
         dotDegree = (float) Math.toDegrees(2 * Math.asin(dotR / trackR));
         logI("dotDegree=" + dotDegree);
@@ -263,115 +264,6 @@ public class Win10LoadingRenderer extends RelativeLayout {
         return objAnim;
     }
 
-
-//    /**
-//     * 创建动画
-//     *
-//     * @param view 需执行的控件
-//     * @param index 该控件执行的顺序
-//     * @return 该控件的动画
-//     */
-//    private Animator createViewAnim(final View view, final int index) {
-//        long duration = 7500; // 一个周期（2圈）一共运行7000ms，固定值
-//
-//        // 最小执行单位时间
-//        final float minRunUnit = duration / 7.5f;
-//        // 最小执行单位时间所占总时间的比例
-//        double minRunPer = minRunUnit / duration;
-//        // 在插值器中实际值（Y坐标值），共8组
-//        final double[] trueRunInOne = new double[]{
-//                0,
-//                0,
-//                180 / 720d,
-//                360 / 720d,
-//                540 / 720d,
-//                1
-//        };
-//        // 动画开始的时间比偏移量。剩下的时间均摊到每个圆点上
-//        final float offset = (float) (index * (7.5 - 6.2) * minRunPer / (mDotViews.length - 1));
-//        // 在差值器中理论值（X坐标值），与realRunInOne对应
-//        final double[] rawRunInOne = new double[]{
-//                0,
-//                offset + 0,
-//                offset + 1.55 * minRunPer,
-//                offset + 3.1 * minRunPer,
-//                offset + 4.65 * minRunPer,
-//                offset + 6.2 * minRunPer
-//        };
-//        logI("minRunUnit=%f, minRunPer=%f, offset=%f", minRunUnit, minRunPer, offset);
-//
-//        // 各贝塞尔曲线控制点的Y坐标
-//        final float p1_1 = (float) (trueRunInOne[2] );
-//        final float p2_1 = (float) (trueRunInOne[2] - (trueRunInOne[2] - trueRunInOne[1]) / 5);
-//        final float p1_2 = (float) (trueRunInOne[2] + (trueRunInOne[2] - trueRunInOne[1]) / 5);
-//        final float p2_2 = (float) (trueRunInOne[2] );
-//        final float p1_3 = (float) (trueRunInOne[4] );
-//        final float p2_3 = (float) (trueRunInOne[4] - (trueRunInOne[4] - trueRunInOne[3]) / 5);
-//        final float p1_4 = (float) (trueRunInOne[4] + (trueRunInOne[4] - trueRunInOne[3]) / 5);
-//        final float p2_4 = (float) (trueRunInOne[4] );
-////        final float p1_2 = calculateLineY(rawRunInOne[2], trueRunInOne[2], rawRunInOne[3], trueRunInOne[3], rawRunInOne[1]);
-////        final float p1_4 = calculateLineY(rawRunInOne[2], trueRunInOne[2], rawRunInOne[3], trueRunInOne[3], rawRunInOne[4]);
-////        final float p1_5 = calculateLineY(rawRunInOne[5], trueRunInOne[5], rawRunInOne[6], trueRunInOne[6], rawRunInOne[4]);
-////        final float p1_7 = calculateLineY(rawRunInOne[5], trueRunInOne[5], rawRunInOne[6], trueRunInOne[6], rawRunInOne[7]);
-//
-//        // A 创建属性动画：绕着中心点旋转2圈
-////        ObjectAnimator objAnim = ObjectAnimator.ofFloat(view, "rotation", 0, 720);
-//        ObjectAnimator objAnim = ObjectAnimator.ofFloat(view, "rotation", -dotDegree * index, 720 - dotDegree * index);
-//        // B 设置一个周期执行的时间
-//        objAnim.setDuration(duration);
-//        // C 设置重复执行的次数：无限次重复执行下去
-//        objAnim.setRepeatCount(ValueAnimator.INFINITE);
-//        // D 设置差值器
-//        objAnim.setInterpolator(new TimeInterpolator() {
-//            @Override
-//            public float getInterpolation(float input) {
-//                if (input < rawRunInOne[1]) {
-//                    if (view.getVisibility() != INVISIBLE) {
-//                        view.setVisibility(INVISIBLE);
-//                    }
-//                    // 1 等待开始
-//                    return 0;
-//                } else if (input < rawRunInOne[2]) {
-//                    if (view.getVisibility() != VISIBLE) {
-//                        view.setVisibility(VISIBLE);
-//                    }
-//                    // 2 底部 → 顶部：贝赛尔曲线1
-//                    // 先转换成[0, 1]范围
-//                    input = calculateNewPercent(rawRunInOne[1], rawRunInOne[2], 0, 1, input);
-//                    return calculateBezierCubic(trueRunInOne[1], p1_1, p2_1, trueRunInOne[2], input);
-////                    return calculateBezierQuadratic(trueRunInOne[1], p1_1, trueRunInOne[2], input);
-//
-//                } else if (input < rawRunInOne[3]) {
-//                    // 3 顶部 → 底部：贝塞尔曲线2
-//                    input = calculateNewPercent(rawRunInOne[2], rawRunInOne[3], 0, 1, input);
-//                    return calculateBezierCubic(trueRunInOne[2], p1_2, p2_2, trueRunInOne[3], input);
-////                    return calculateBezierQuadratic(trueRunInOne[2], p1_2, trueRunInOne[3], input);
-//
-//                } else if (input < rawRunInOne[4]) {
-//                    // 4 顶部 → 底部：贝赛尔曲线3
-//                    input = calculateNewPercent(rawRunInOne[3], rawRunInOne[4], 0, 1, input);
-//                    return calculateBezierCubic(trueRunInOne[3], p1_3, p2_3, trueRunInOne[4], input);
-////                    return calculateBezierQuadratic(trueRunInOne[3], p1_3, trueRunInOne[4], input);
-//
-//                } else if (input < rawRunInOne[5]) {
-//                    // 5 底部 → 左上角：贝赛尔曲线4
-//                    input = calculateNewPercent(rawRunInOne[4], rawRunInOne[5], 0, 1, input);
-//                    return calculateBezierCubic(trueRunInOne[4], p1_4, p2_4, trueRunInOne[5], input);
-////                    return calculateBezierQuadratic(trueRunInOne[4], p1_4, trueRunInOne[5], input);
-//
-//                } else {
-//                    // 6 隐藏消失
-//                    if (view.getVisibility() != INVISIBLE) {
-//                        view.setVisibility(INVISIBLE);
-//                    }
-//                    return 1;
-//                }
-//
-//            }
-//        });
-//        return objAnim;
-//    }
-
     /**
      * 根据旧范围，给定旧值，计算在新范围中的值
      *
@@ -421,6 +313,15 @@ public class Win10LoadingRenderer extends RelativeLayout {
         return (float) (tmp * tmp * p0 + 2 * tmp * t * p1 + t * t * p2);
     }
 
+    /**
+     * 三阶贝塞尔曲线
+     * @param p0 起点
+     * @param p1 控制点1
+     * @param p2 控制点2
+     * @param p3 终点
+     * @param t 时间
+     * @return 曲线对应坐标值
+     */
     private float calculateBezierCubic(double p0, double p1, double p2, double p3, @FloatRange(from = 0, to = 1) double t) {
         double tmp = 1 - t;
         return (float) (tmp * tmp * tmp * p0 + 3 * tmp * tmp * t * p1 + 3 * tmp * t * t * p2 + t * t* t * p3);

@@ -11,6 +11,9 @@ LoadingRenderer —— 此开源项目为加载动画
  * [1_3-原理分析](#1_3-原理分析)
  
  ##更新
+ v1.1：优化圆点的起始位置，使其与原生更接近  
+   ![win10_v1.1](img/win10_v1.1.gif)
+  
  v1：  添加Win10加载动画Win10LoadingRenderer
  
  ##1-Win10加载动画
